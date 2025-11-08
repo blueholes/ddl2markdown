@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL DDL 转 Markdown 表格工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SQL DDL 转 Markdown 表格工具</h1>
+            <p class="subtitle">将 SQL CREATE TABLE 语句转换为 Markdown 格式的表格</p>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-header">
+                    <h2>输入 SQL DDL</h2>
+                    <button id="clearBtn" class="btn-secondary">清空</button>
+                </div>
+                <textarea id="sqlInput" placeholder="请输入 CREATE TABLE 语句，例如：&#10;&#10;CREATE TABLE users (&#10;    id INT PRIMARY KEY AUTO_INCREMENT,&#10;    username VARCHAR(50) NOT NULL,&#10;    email VARCHAR(100) UNIQUE,&#10;    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP&#10;);"></textarea>
+                <div class="button-group">
+                    <button id="convertBtn" class="btn-primary">转换</button>
+                    <button id="exampleBtn" class="btn-secondary">加载示例</button>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="section-header">
+                    <h2>Markdown 输出</h2>
+                    <button id="copyBtn" class="btn-secondary">复制</button>
+                </div>
+                <textarea id="markdownOutput" readonly placeholder="转换后的 Markdown 表格将显示在这里..."></textarea>
+                <div id="preview" class="preview-area"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>支持 MySQL, PostgreSQL, SQLite 等常见数据库的 DDL 语法</p>
+        </footer>
+    </div>
+
+    <script src="ddl2markdown.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
