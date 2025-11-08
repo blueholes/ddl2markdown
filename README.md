@@ -38,12 +38,12 @@ COMMENT ON COLUMN users.email IS '邮箱（PostgreSQL 示例）';
 ```markdown
 ## users
 
-| 字段名 | 类型 | 键类型 | 非空 | 说明 |
-|--------|------|--------|------|------|
-| id | INT | PRIMARY KEY | 是 | 用户ID |
-| username | VARCHAR(50) | - | 是 | 用户名 |
-| email | VARCHAR(100) | UNIQUE | 否 | 邮箱（PostgreSQL 示例） |
-| created_at | TIMESTAMP | - | 否 | 创建时间 |
+| 字段名 | 类型 | 键类型 | 非空 | 默认值 | 说明 |
+|--------|------|--------|------|--------|------|
+| id | INT | PRIMARY KEY | 是 | - | 用户ID |
+| username | VARCHAR(50) | - | 是 | - | 用户名 |
+| email | VARCHAR(100) | UNIQUE | 否 | - | 邮箱（PostgreSQL 示例） |
+| created_at | TIMESTAMP | - | 否 | CURRENT_TIMESTAMP | 创建时间 |
 ```
 
 ## 文件说明

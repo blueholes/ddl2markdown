@@ -180,10 +180,26 @@ class DDL2Markdown {
             constraints.autoIncrement = true;
         }
 
-        // DEFAULT
-        const defaultMatch = constraintsStr.match(/DEFAULT\s+([^,\s]+(?:\s+[^,\s]+)*)/i);
+        // DEFAULT - 支持字符串、数字、函数调用等
+        const defaultRegex = /DEFAULT\s+(.+?)(?:\s+(?:COMMENT|ON\s+UPDATE|NOT\s+NULL|NULL|UNIQUE|PRIMARY|AUTO_INCREMENT|AUTOINCREMENT)|$)/i;
+        const defaultMatch = constraintsStr.match(defaultRegex);
         if (defaultMatch) {
-            constraints.default = defaultMatch[1].trim();
+            let defaultValue = defaultMatch[1].trim();
+            // 移除尾随的逗号
+            defaultValue = defaultValue.replace(/,\s*$/, '').trim();
+            
+            // 如果值以引号开始，完整提取引号内容
+            if ((defaultValue.startsWith("'") && defaultValue.endsWith("'")) ||
+                (defaultValue.startsWith('"') && defaultValue.endsWith('"'))) {
+                constraints.default = defaultValue;
+            } else {
+                // 对于函数调用或数字，提取到第一个空格或逗号之前（但保留 CURRENT_TIMESTAMP 这样的多词函数）
+                // 处理 CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 的情况
+                if (defaultValue.toUpperCase().includes('ON UPDATE')) {
+                    defaultValue = defaultValue.split(/ON\s+UPDATE/i)[0].trim();
+                }
+                constraints.default = defaultValue;
+            }
         }
 
         // COMMENT '...'
@@ -247,8 +263,8 @@ class DDL2Markdown {
         const { tableName, fields } = parsed;
         
         let markdown = `## ${tableName}\n\n`;
-        markdown += `| 字段名 | 类型 | 键类型 | 非空 | 说明 |\n`;
-        markdown += `|--------|------|--------|------|------|\n`;
+        markdown += `| 字段名 | 类型 | 键类型 | 非空 | 默认值 | 说明 |\n`;
+        markdown += `|--------|------|--------|------|--------|------|\n`;
 
         for (const field of fields) {
             // 键类型优先级：PRIMARY KEY > UNIQUE，否则为 '-'
@@ -259,8 +275,11 @@ class DDL2Markdown {
             // 非空：是/否（PRIMARY KEY 默认非空）
             const notNull = field.constraints.nullable ? '否' : '是';
 
+            // 默认值
+            const defaultValue = field.constraints.default ? field.constraints.default : '-';
+
             const comment = field.constraints.comment ? field.constraints.comment : '';
-            markdown += `| ${field.name} | ${field.type} | ${keyType} | ${notNull} | ${comment} |\n`;
+            markdown += `| ${field.name} | ${field.type} | ${keyType} | ${notNull} | ${defaultValue} | ${comment} |\n`;
         }
 
         return markdown;
